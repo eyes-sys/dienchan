@@ -55,23 +55,22 @@
 </div>
 
 <script>
-    // ⚠️ HÃY THAY MÃ ID FILE GOOGLE SHEETS CỦA BẠN VÀO GIỮA HAI DẤU NGOẶC KÉP DƯỚI ĐÂY:
-    const GOOGLE_SHEET_ID = "https://docs.google.com/spreadsheets/d/1u2X56PnoEbCEMQxZ61hX695yYKZkL18eOar7cC_bxxI/edit?gid=250662614#gid=250662614";
+    // =========================================================================
+    // ⚠️ HÃY DÁN MÃ ID GOOGLE SHEETS CỦA BẠN VÀO GIỮA HAI DẤU NHÁY DƯỚI ĐÂY:
+    // =========================================================================
+    const GOOGLE_SHEET_ID = "https://docs.google.com/spreadsheets/d/1u2X56PnoEbCEMQxZ61hX695yYKZkL18eOar7cC_bxxI/edit?gid=0#gid=0";
 
     let khoDataBenh = [];
     let khoDataHuyet = [];
 
+    // Hàm gọi dữ liệu đám mây bằng phương thức TSV chống phân tách nhầm dấu phẩy
     async function taiDuLieuTuExcel() {
         try {
-            const urlBenh = "https://google.com" + GOOGLE_SHEET_ID + "/gviz/tq?tqx=out:csv&sheet=Sheet1";
-            const urlHuyet = "https://google.com" + GOOGLE_SHEET_ID + "/gviz/tq?tqx=out:csv&sheet=Sheet2";
+            const urlGoc = "https://google.com" + GOOGLE_SHEET_ID + "/gviz/tq?tqx=out:tsv&sheet=Sheet1";
+            const dapAn = await fetch(urlGoc);
+            const textToanBo = await dapAn.text();
 
-            const [resBenh, resHuyet] = await Promise.all([fetch(urlBenh), fetch(urlHuyet)]);
-            const textBenh = await resBenh.text();
-            const textHuyet = await resHuyet.text();
-
-            khoDataBenh = csvToObjects(textBenh);
-            khoDataHuyet = csvToObjects(textHuyet);
+            xuLyDuLieuPhang(textToanBo);
 
             document.getElementById('man-hinh-tai').style.display = 'none';
             document.getElementById('tab-benh').style.display = 'block';
@@ -87,26 +86,45 @@
                 }
             });
         } catch (e) {
-            document.getElementById('man-hinh-tai').innerHTML = "❌ Lỗi kết nối nguồn Excel. Hãy chắc chắn bạn đã cấu hình mở khóa công khai file.";
+            document.getElementById('man-hinh-tai').innerHTML = "❌ Lỗi kết nối nguồn Excel trực tuyến. Hãy kiểm tra lại mã ID hoặc cài đặt chia sẻ của bạn.";
         }
     }
 
-    function csvToObjects(csvText) {
-        const lines = csvText.split('\n');
-        if (lines.length === 0) return [];
-        const headers = lines[0].replace(/"/g, '').split(',');
-        const result = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (!lines[i]) continue;
-            const currentline = lines[i].replace(/"/g, '').split(',');
-            const obj = {};
-            for (let j = 0; j < headers.length; j++) {
-                let hName = headers[j] ? headers[j].trim() : "";
-                obj[hName] = currentline[j] ? currentline[j].trim() : "";
+    // Bộ giải mã dữ liệu phẳng TSV ngăn chặn triệt để lỗi dấu phẩy phác đồ
+    function xuLyDuLieuPhang(tsvText) {
+        const dong = tsvText.split('\n');
+        if (dong.length <= 1) return;
+
+        const tieuDe = dong[0].replace(/"/g, '').split('\t');
+        
+        for (let i = 1; i < dong.length; i++) {
+            if (!dong[i]) continue;
+            const oDuLieu = dong[i].replace(/"/g, '').split('\t');
+            
+            let objBenh = {};
+            let objHuyet = {};
+            let coBenh = false;
+            let coHuyet = false;
+
+            for (let j = 0; j < tieuDe.length; j++) {
+                let tenCot = tieuDe[j] ? tieuDe[j].trim() : "";
+                let giaTri = oDuLieu[j] ? oDuLieu[j].trim() : "";
+
+                // Phân tách cột bệnh (A -> E)
+                if (["TenBenh", "TrieuChung", "BoHuyet", "KyThuat", "LoiKhuyen"].includes(tenCot)) {
+                    objBenh[tenCot] = giaTri;
+                    if (tenCot === "TenBenh" && giaTri) coBenh = true;
+                }
+                // Phân tách cột huyệt (F -> K)
+                if (["SoHuyet", "ViTri", "TacDung", "CanhBao", "BenhLienQuan", "LuuY"].includes(tenCot)) {
+                    objHuyet[tenCot] = giaTri;
+                    if (tenCot === "SoHuyet" && giaTri) coHuyet = true;
+                }
             }
-            result.push(obj);
+
+            if (coBenh) khoDataBenh.push(objBenh);
+            if (coHuyet) khoDataHuyet.push(objHuyet);
         }
-        return result;
     }
 
     function chuyenTab(tenTab) {
@@ -146,23 +164,25 @@
         
         let timThay = false;
         khoDataHuyet.forEach(h => {
-            if ((h.SoHuyet && String(h.SoHuyet).toLowerCase().includes(tuKhoa)) || 
-                (h.TacDung && String(h.TacDung).toLowerCase().includes(tuKhoa)) || 
-                (h.BenhLienQuan && String(h.BenhLienQuan).toLowerCase().includes(tuKhoa))) {
+            let sHuyet = h.SoHuyet ? String(h.SoHuyet).toLowerCase() : "";
+            let tDung = h.TacDung ? String(h.TacDung).toLowerCase() : "";
+            let bLuan = h.BenhLienQuan ? String(h.BenhLienQuan).toLowerCase() : "";
+
+            if (sHuyet.includes(tuKhoa) || tDung.includes(tuKhoa) || bLuan.includes(tuKhoa)) {
                 timThay = true;
                 vungKetQuaHuyet.innerHTML += `
                     <div class="huyet-box" style="padding:15px; margin:10px 0; background:#fff; border-left:5px solid #00796b;">
                         <h3 style="color:#00796b; margin:0 0 10px 0;">📌 ${String(h.SoHuyet).toUpperCase()}</h3>
-                        <p><strong>📍 Vị trí xác định:</strong> ${h.ViTri}</p>
-                        <p><strong>⚡ Tác dụng chủ trị:</strong> ${h.TacDung}</p>
-                        <p style="color:#ef6c00;"><strong>⚠️ Cảnh báo chống chỉ định:</strong> ${h.CanhBao}</p>
-                        <p style="color:#1565c0;"><strong>🔗 Các bệnh liên quan:</strong> ${h.BenhLienQuan}</p>
-                        <p><strong>📝 Lưu ý đặc biệt:</strong> ${h.LuuY}</p>
+                        <p><strong>📍 Vị trí xác định:</strong> ${h.ViTri || "Chưa có thông tin"}</p>
+                        <p><strong>⚡ Tác dụng chủ trị:</strong> ${h.TacDung || "Chưa có thông tin"}</p>
+                        <p style="color:#ef6c00;"><strong>⚠️ Cảnh báo chống chỉ định:</strong> ${h.CanhBao || "Không có chống chỉ định đặc biệt"}</p>
+                        <p style="color:#1565c0;"><strong>🔗 Các bệnh liên quan:</strong> ${h.BenhLienQuan || "Chưa có thông tin"}</p>
+                        <p><strong>📝 Lưu ý đặc biệt:</strong> ${h.LuuY || "Chưa có thông tin"}</p>
                     </div>`;
             }
         });
         if (!timThay) {
-            vungKetQuaHuyet.innerHTML = '<p style="color:red; text-align:center; margin-top:20px; font-weight:bold;">❌ Không tìm thấy huyệt đạo nào khớp.</p>';
+            vungKetQuaHuyet.innerHTML = '<p style="color:red; text-align:center; margin-top:20px; font-weight:bold;">❌ Không tìm thấy huyệt đạo nào khớp với từ khóa.</p>';
         }
     }
 
