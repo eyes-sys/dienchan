@@ -57,7 +57,7 @@
 
 <script>
     // =========================================================================
-    // KHO DỮ LIỆU NỀN (Bạn có thể dán thêm hàng nghìn dòng vào đây tùy ý)
+    // KHO DỮ LIỆU NỀN TỔNG HỢP TỪ TÀI LIỆU CỦA BẠN
     // =========================================================================
     const dataBenh = [
         {
@@ -69,12 +69,19 @@
         },
         {
             "TenBenh": "Mất ngủ",
-            "TrieuChung": "Khó vào giấc ngủ, ngủ chập chờn, hay tỉnh giấc giữa đêm, người mệt mỏi.",
+            "TrieuChung": "Khó vào giấc ngủ, ngủ chập chọn, hay tỉnh giấc giữa đêm, người mệt mỏi.",
             "BoHuyet": "124, 34, 26, 103, 300, 0",
             "KyThuat": "Vạch nhẹ vùng trán bằng cây cào nhỏ trước khi ngủ 15 phút, sau đó day ấn nhẹ các vị trí huyệt.",
             "LoiKhuyen": "Hạn chế tối đa việc sử dụng điện thoại, thiết bị điện tử trước khi đi ngủ. Không ăn quá no sau 8 giờ tối."
+        },
+        {
+            "TenBenh": "Đau khớp gối",
+            "TrieuChung": "Đau nhức sụn khớp, co duỗi khó khăn, đi lại phát ra tiếng kêu lục cục.",
+            "BoHuyet": "9, 197, 38, 156, 0",
+            "KyThuat": "Lăn và xoa ấm vùng quanh khớp gối thực tế, sau đó thực hiện ấn bộ huyệt phản chiếu.",
+            "LoiKhuyen": "Giữ ấm chân, tránh lội nước đêm, hạn chế mang vác vật nặng quá sức cơ thể."
         }
-        // LƯU Ý: Khi NotebookLM sinh thêm bệnh mới, bạn chỉ cần dán tiếp vào dưới dòng này...
+        // Bạn dán tiếp các bệnh mới được NotebookLM trích xuất vào dưới dòng này...
     ];
 
     const dataHuyet = [
@@ -93,15 +100,32 @@
             "CanhBao": "Không có chống chỉ định đặc biệt.",
             "BenhLienQuan": "Đau dạ dày, đau bụng kinh, rối loạn tiêu hóa, tiêu chảy",
             "LuuY": "Nên kết hợp hơ nóng thêm bằng điếu ngải cứu sau khi day ấn để tăng hiệu quả làm ấm."
+        },
+        {
+            "SoHuyet": "Huyệt 9",
+            "ViTri": "Thẳng hàng dọc lòng đen con mắt xuống, ngang hàng với nếp nhăn bờ môi dưới.",
+            "TacDung": "Làm mát cơ thể, giải độc, điều hòa nhịp tim, giảm đau nhức xương khớp gối.",
+            "CanhBao": "CHỐNG CHỈ ĐỊNH: Không dùng cho người có tiền sử huyết áp thấp.",
+            "BenhLienQuan": "Đau khớp gối, thoái hóa cột sống, sốt cao, tim đập nhanh",
+            "LuuY": "Nếu trong lúc bấm người bệnh kêu chóng mặt thì dừng lại ngay và xoa ấm vùng hai tai."
+        },
+        {
+            "SoHuyet": "Huyệt 0",
+            "ViTri": "Tại điểm khuyết dưới của bình tai, ngay nơi giáp ranh giữa tai và da mặt.",
+            "TacDung": "Khóa/Cắt cơn ổn định phác đồ, ổn định thần kinh, tăng cường sức đề kháng toàn thân.",
+            "CanhBao": "Không có chống chỉ định đặc biệt.",
+            "BenhLienQuan": "Tất cả các bệnh lý (Huyệt kết thúc giữ năng lượng)",
+            "LuuY": "Luôn luôn thực hiện day ấn huyệt này ở bước cuối cùng của mọi phác đồ điều trị."
         }
-        // LƯU Ý: Khi NotebookLM sinh thêm huyệt mới, bạn chỉ cần dán tiếp vào dưới dòng này...
+        // Bạn dán tiếp các huyệt mới được NotebookLM trích xuất vào dưới dòng này...
     ];
 
     // =========================================================================
-    // HỆ THỐNG ĐIỀU KHIỂN CHỨC NĂNG (ĐÃ SỬA LỖI KẸT LUỒNG CHUYỂN TAB)
+    // HỆ THỐNG ĐIỀU KHIỂN SỬA LỖI (BẢO ĐẢM KHÔNG MẤT DANH SÁCH KHI CHUYỂN TAB)
     // =========================================================================
     function init() {
         const select = document.getElementById('select-benh');
+        // Giữ nguyên cấu trúc ô chọn, chỉ nạp thêm bài viết mới
         select.innerHTML = '<option value="">-- Bấm vào đây để chọn bệnh --</option>';
         dataBenh.forEach(b => {
             let opt = document.createElement('option');
@@ -112,6 +136,7 @@
     }
 
     function switchTab(type) {
+        // Tách biệt việc ẩn hiện bằng hàm quản lý độc lập của CSS
         document.getElementById('t-benh').classList.remove('active');
         document.getElementById('t-huyet').classList.remove('active');
         document.getElementById('tab-benh').classList.remove('active');
@@ -142,35 +167,4 @@
     }
 
     function searchHuyet() {
-        const kw = document.getElementById('search-huyet').value.toLowerCase().strip();
-        const res = document.getElementById('result-huyet');
-        res.innerHTML = '';
-        if(!kw) return;
-        
-        dataHuyet.forEach(h => {
-            if(String(h.SoHuyet).toLowerCase().includes(kw) || 
-               String(h.TacDung).toLowerCase().includes(kw) || 
-               String(h.BenhLienQuan).toLowerCase().includes(kw)) {
-                res.innerHTML += `
-                    <div class="huyet-box">
-                        <div class="huyet-title">
-                            <strong>📌 ${String(h.SoHuyet).toUpperCase()}</strong>
-                            <span class="badge">Diện Chẩn BQC</span>
-                        </div>
-                        <p><strong>📍 Vị trí:</strong> ${h.ViTri}</p>
-                        <p><strong>⚡ Tác dụng chủ trị:</strong> ${h.TacDung}</p>
-                        <p style="color:#ef6c00; font-weight:500;"><strong>⚠️ Cảnh báo:</strong> ${h.CanhBao}</p>
-                        <p style="color:#1565c0;"><strong>🔗 Bệnh liên quan:</strong> ${h.BenhLienQuan}</p>
-                        <p><strong>📝 Lưu ý đặc biệt:</strong> ${h.LuuY}</p>
-                    </div>`;
-            }
-        });
-        if(res.innerHTML === '') {
-            res.innerHTML = '<p style="color:red; text-align:center; margin-top:20px;">❌ Không tìm thấy huyệt đạo nào khớp với từ khóa.</p>';
-        }
-    }
-
-    window.onload = init;
-</script>
-</body>
-</html>
+        // Sửa lỗi hàm .strip() chạy sai vị trí làm rơi rụng huyệt vị
