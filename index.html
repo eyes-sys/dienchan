@@ -2,33 +2,31 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Cẩm Nang Tra Cứu Diện Chẩn Toàn Diện</title>
+    <title>Cẩm Nang Tra Cứu Diện Chẩn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; background-color: #edeef0; color: #333; }
-        .container { max-width: 850px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #004d40; text-align: center; margin-top: 0; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #00796b; padding-bottom: 10px; }
-        .tabs { display: flex; background: #e0f2f1; border-radius: 8px; padding: 4px; margin-bottom: 20px; }
-        .tab-item { flex: 1; text-align: center; padding: 12px 5px; font-weight: bold; color: #00796b; cursor: pointer; border-radius: 6px; user-select: none; transition: 0.2s; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background-color: #edeef0; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #004d40; text-align: center; margin-top: 0; font-size: 20px; border-bottom: 2px solid #00796b; padding-bottom: 10px; text-transform: uppercase; }
+        .tabs { display: flex; background: #e0f2f1; border-radius: 6px; padding: 4px; margin-bottom: 20px; }
+        .tab-item { flex: 1; text-align: center; padding: 12px; font-weight: bold; color: #00796b; cursor: pointer; border-radius: 4px; user-select: none; }
         .tab-item.active { background: #00796b; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        label { font-weight: bold; color: #004d40; display: block; margin-bottom: 5px; }
+        label { font-weight: bold; color: #004d40; display: block; margin-bottom: 8px; }
         select, input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #b2dfdb; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        select:focus, input:focus { outline: none; border-color: #00796b; }
-        .block { padding: 15px; margin: 12px 0; border-radius: 6px; background: #f9f9f9; border-left: 5px solid #b0bec5; line-height: 1.5; }
+        .block { padding: 15px; margin: 12px 0; border-radius: 6px; background: #f9f9f9; border-left: 5px solid #b0bec5; }
         .info { background: #e8f5e9; border-left-color: #2e7d32; }
         .success { background: #e3f2fd; border-left-color: #1565c0; }
         .warning { background: #fff3e0; border-left-color: #ef6c00; }
-        .huyet-box { background: #fff; border: 1px solid #e0e0e0; padding: 15px; margin: 15px 0; border-radius: 6px; border-left: 5px solid #00796b; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-        .huyet-box p { margin: 6px 0; line-height: 1.4; }
+        .huyet-box { background: #fff; border: 1px solid #e0e0e0; padding: 15px; margin: 15px 0; border-radius: 6px; border-left: 5px solid #00796b; }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>🩺 CẨM NANG TRA CỨU DIỆN CHẨN BÙI QUỐC CHÂU</h1>
     
-    <!-- THANH CHUYỂN TAB ĐÃ ĐƯỢC CHUẨN HÓA LOGIC -->
+    <!-- THANH CHUYỂN TAB ĐÃ ĐƯỢC ĐƠN GIẢN HÓA LOGIC -->
     <div class="tabs">
         <div id="t-benh" class="tab-item active" onclick="chuyenTab('benh')">📋 Tra Cứu Theo BỆNH</div>
         <div id="t-huyet" class="tab-item" onclick="chuyenTab('huyet')">📌 Tra Cứu Chi Tiết HUYỆT</div>
@@ -36,130 +34,147 @@
 
     <!-- TAB 1: TRA CỨU BỆNH -->
     <div id="tab-benh" class="tab-content active">
-        <label for="select-benh">Chọn tên bệnh để xem phác đồ bộ huyệt chi tiết:</label>
-        <select id="select-benh" onchange="hienThiPhacDoBenh()">
+        <label>Chọn tên bệnh để xem phác đồ điều trị chi tiết:</label>
+        <select id="select-benh" onchange="hienThiPhacDo()">
             <option value="">-- Bấm vào đây để chọn bệnh lý --</option>
+            <option value="Đau dạ dày">Đau dạ dày</option>
+            <option value="Mất ngủ">Mất ngủ</option>
+            <option value="Đau khớp gối">Đau khớp gối</option>
         </select>
+        
         <div id="result-benh" style="display:none;">
-            <div class="block info"><strong>🔹 Triệu chứng lâm sàng:</strong> <div id="b-trieuchung" style="margin-top:5px;"></div></div>
-            <div class="block success"><strong>🎯 Bộ huyệt Diện Chẩn (Phác đồ):</strong> <div id="b-bohuyet" style="margin-top:5px; font-size: 20px; font-weight: bold; color: #1565c0;"></div></div>
-            <div class="block"><strong>🛠️ Kỹ thuật thực hiện:</strong> <div id="b-kythuat" style="margin-top:5px; white-space: pre-line;"></div></div>
-            <div class="block warning"><strong>💡 Lời khuyên kiêng cữ / Lưu ý đặc biệt:</strong> <div id="b-loikhuyen" style="margin-top:5px; white-space: pre-line;"></div></div>
+            <div class="block info"><strong>🔹 Triệu chứng lâm sàng:</strong> <p id="b-trieuchung"></p></div>
+            <div class="block success"><strong>🎯 Bộ huyệt Diện Chẩn (Phác đồ):</strong> <p id="b-bohuyet" style="font-size: 20px; font-weight: bold; color: #1565c0;"></p></div>
+            <div class="block"><strong>🛠️ Kỹ thuật thực hiện:</strong> <p id="b-kythuat" style="white-space: pre-line;"></p></div>
+            <div class="block warning"><strong>💡 Lời khuyên kiêng cữ / Lưu ý:</strong> <p id="b-loikhuyen" style="white-space: pre-line;"></p></div>
         </div>
     </div>
 
     <!-- TAB 2: TRA CỨU HUYỆT -->
     <div id="tab-huyet" class="tab-content">
-        <label for="search-huyet">Nhập số huyệt, tác dụng hoặc tên bệnh lý liên quan:</label>
-        <input type="text" id="search-huyet" oninput="timKiemHuyetDao()" placeholder="Ví dụ: 19, dạ dày, hạ sốt, mất ngủ...">
+        <label>Nhập số huyệt hoặc từ khóa tác dụng cần tìm:</label>
+        <input type="text" id="search-huyet" oninput="timKiemHuyet()" placeholder="Ví dụ: 19, dạ dày, hạ sốt...">
         <div id="result-huyet"></div>
     </div>
 </div>
 
 <script>
-    // =========================================================================
-    // KHO DỮ LIỆU NỀN SẠCH (Tuyệt đối không bao giờ lo thiếu huyệt)
-    // =========================================================================
+    // DATA BỆNH LÝ TỔNG HỢP CỐ ĐỊNH (Không lo lỗi kẹt file ngoài)
     const khoDataBenh = [
         {
             "TenBenh": "Đau dạ dày",
             "TrieuChung": "Đau rát vùng thượng vị, đầy hơi, ợ chua, ăn uống khó tiêu.",
             "BoHuyet": "19, 14, 50, 61, 39, 127, 0",
-            "KyThuat": "Dùng que dò chuyên dụng day ấn nhẹ nhàng vào mỗi vị trí huyệt khoảng 30 giây. Làm đều đặn ngày 2 lần vào buổi sáng và tối trước ăn.",
-            "LoiKhuyen": "Tuyệt đối kiêng ăn các đồ chua, cay, nóng. Không uống nước đá lạnh, không bỏ bữa sáng."
+            "KyThuat": "Dùng que dò chuyên dụng day ấn nhẹ nhàng vào mỗi vị trí huyệt khoảng 30 giây. Làm đều đặn ngày 2 lần.",
+            "LoiKhuyen": "Tuyệt đối kiêng ăn các đồ chua, cay, nóng. Không uống nước đá lạnh."
         },
         {
             "TenBenh": "Mất ngủ",
-            "TrieuChung": "Khó đi vào giấc ngủ, giấc ngủ chập chờn, hay tỉnh giấc nửa đêm, sáng dậy mệt mỏi.",
+            "TrieuChung": "Khó vào giấc ngủ, ngủ chập chờn, hay tỉnh giấc giữa đêm.",
             "BoHuyet": "124, 34, 26, 103, 300, 0",
-            "KyThuat": "Vạch nhẹ vùng trán bằng cây cào nhỏ hoặc đầu ngón tay trước khi ngủ 15 phút, sau đó day ấn nhẹ các vị trí huyệt.",
+            "KyThuat": "Vạch nhẹ vùng trán bằng cây cào nhỏ trước khi ngủ 15 phút, sau đó day ấn nhẹ các vị trí huyệt.",
             "LoiKhuyen": "Hạn chế tối đa việc sử dụng điện thoại trước khi đi ngủ. Không ăn quá no sau 8 giờ tối."
         },
         {
             "TenBenh": "Đau khớp gối",
             "TrieuChung": "Đau nhức sụn khớp gối, co duỗi khó khăn, đi lại phát ra tiếng kêu lục cục nhức mỏi.",
             "BoHuyet": "9, 197, 38, 156, 0",
-            "KyThuat": "Lăn và xoa bóp ấm vùng quanh khớp gối thực tế bị đau, sau đó thực hiện day ấn nhẹ bộ huyệt phản chiếu trên mặt.",
-            "LoiKhuyen": "Giữ ấm đôi bàn chân, tránh lội nước đêm, hạn chế mang vác vật nặng quá sức cơ thể."
+            "KyThuat": "Lăn và xoa bóp ấm vùng quanh khớp gối thực tế bị đau, sau đó thực hiện day ấn nhẹ bộ huyệt phản chiếu.",
+            "LoiKhuyen": "Giữ ấm đôi bàn chân, tránh lội nước đêm, hạn chế mang vác vật nặng quá sức."
         }
-        // [MẸO NHẬP LIỆU]: Bạn dán nối tiếp các bệnh mới từ NotebookLM vào ngay dưới dòng này...
     ];
 
+    // DATA HUYỆT VỊ TỔNG HỢP CỐ ĐỊNH
     const khoDataHuyet = [
         {
             "SoHuyet": "Huyệt 19",
             "ViTri": "Nằm ở điểm cao nhất của rãnh nhân trung, vị trí sát ngay dưới vách mũi.",
-            "TacDung": "Điều hòa tim mạch, trợ tim, nâng huyết áp, điều hòa hệ tiêu hóa, co bóp tử cung, chống co giật.",
+            "TacDung": "Điều hòa tim mạch, trợ tim, nâng huyết áp, điều hòa hệ tiêu hóa, chống ngất xỉu.",
             "CanhBao": "CHỐNG CHỈ ĐỊNH: Tuyệt đối không dùng cho người đang bị cao huyết áp và phụ nữ đang mang thai.",
-            "BenhLienQuan": "Đau dạ dày, ngất xỉu, co giật, suy nhược thần kinh, tụt huyết áp",
+            "BenhLienQuan": "Đau dạ dày, ngất xỉu, co giật, suy nhược thần kinh",
             "LuuY": "Khi tác động cần ấn dứt khoát nhưng nhẹ nhàng, theo dõi kỹ sắc mặt của người bệnh."
         },
         {
             "SoHuyet": "Huyệt 127",
             "ViTri": "Nằm ở điểm lõm nhất trên vùng da giữa bờ dưới của môi dưới và lồi cằm.",
-            "TacDung": "Làm ấm bụng, điều hòa hệ tiêu hóa, tăng cường nhu động ruột, giảm đau bụng kinh, chữa tiêu chảy.",
+            "TacDung": "Làm ấm bụng, điều hòa hệ tiêu hóa, giảm đau bụng kinh, chữa tiêu chảy hữu hiệu.",
             "CanhBao": "Không có chống chỉ định đặc biệt.",
-            "BenhLienQuan": "Đau dạ dày, đau bụng kinh, rối loạn tiêu hóa, tiêu chảy, lạnh bụng",
-            "LuuY": "Nên kết hợp hơ nóng thêm bằng điếu ngải cứu sau khi day ấn để tăng hiệu quả làm ấm tỳ vị."
+            "BenhLienQuan": "Đau dạ dày, đau bụng kinh, rối loạn tiêu hóa, tiêu chảy",
+            "LuuY": "Nên kết hợp hơ nóng thêm bằng điếu ngải cứu sau khi day ấn để tăng hiệu quả."
         },
         {
             "SoHuyet": "Huyệt 9",
-            "ViTri": "Thẳng hàng dọc từ lòng đen con mắt xuống, ngang hàng với nếp nhăn bờ môi dưới.",
-            "TacDung": "Làm mát cơ thể, giải độc, điều hòa nhịp tim, tiêu viêm, giảm đau nhức xương khớp vùng gối.",
+            "ViTri": "Thẳng hàng dọc lòng đen con mắt xuống, ngang hàng với nếp nhăn bờ môi dưới.",
+            "TacDung": "Làm mát cơ thể, giải độc, điều hòa nhịp tim, giảm đau nhức xương khớp gối.",
             "CanhBao": "CHỐNG CHỈ ĐỊNH: Không dùng cho người có tiền sử huyết áp thấp.",
             "BenhLienQuan": "Đau khớp gối, thoái hóa cột sống, sốt cao, tim đập nhanh",
-            "LuuY": "Nếu trong lúc bấm người bệnh kêu chóng mặt thì dừng lại ngay và xoa ấm vùng hai tai để điều hòa."
+            "LuuY": "Nếu trong lúc bấm người bệnh kêu chóng mặt thì dừng lại ngay và xoa ấm vùng hai tai."
         },
         {
             "SoHuyet": "Huyệt 0",
-            "ViTri": "Tại điểm khuyết dưới của bình tai, ngay nơi giáp ranh giữa tai và da vùng mặt.",
-            "TacDung": "Khóa/Cắt cơn ổn định phác đồ, ổn định thần kinh, tăng cường sức đề kháng toàn thân, thu liễm năng lượng.",
+            "ViTri": "Tại điểm khuyết dưới của bình tai, ngay nơi giáp ranh giữa tai và da mặt.",
+            "TacDung": "Khóa ổn định phác đồ, ổn định thần kinh, tăng cường sức đề kháng toàn thân.",
             "CanhBao": "Không có chống chỉ định đặc biệt.",
             "BenhLienQuan": "Tất cả các bệnh lý (Huyệt kết thúc phác đồ)",
-            "LuuY": "Luôn luôn thực hiện day ấn huyệt này ở bước cuối cùng của mọi phác đồ điều trị Diện Chẩn."
+            "LuuY": "Luôn luôn thực hiện day ấn huyệt này ở bước cuối cùng của mọi phác đồ điều trị."
         }
-        // [MẸO NHẬP LIỆU]: Bạn dán nối tiếp các huyệt mới từ NotebookLM vào ngay dưới dòng này...
     ];
 
-    // =========================================================================
-    // BỘ ĐIỀU KHIỂN LOGIC CHUẨN HOÁ (SỬA TRIỆT ĐỂ LỖI KẸT GIAO DIỆN)
-    // =========================================================================
-    function khoiTaoTrangWeb() {
-        const select = document.getElementById('select-benh');
-        select.innerHTML = '<option value="">-- Bấm vào đây để chọn bệnh lý --</option>';
-        khoDataBenh.forEach(b => {
-            let opt = document.createElement('option');
-            opt.value = b.TenBenh;
-            opt.text = b.TenBenh;
-            select.appendChild(opt);
-        });
-    }
-
+    // HÀM CHUYỂN TAB THÔ SƠ NGUYÊN BẢN (KHÔNG LO LỖI TRÌNH DUYỆT)
     function chuyenTab(tenTab) {
-        // Sử dụng lệnh đổi thuộc tính hiển thị (display) cơ bản nhất của trình duyệt
         if (tenTab === 'benh') {
-            document.getElementById('t-benh').className = 'tab-item active';
-            document.getElementById('t-huyet').className = 'tab-item';
+            document.getElementById('t-benh').setAttribute('class', 'tab-item active');
+            document.getElementById('t-huyet').setAttribute('class', 'tab-item');
             document.getElementById('tab-benh').style.display = 'block';
             document.getElementById('tab-huyet').style.display = 'none';
         } else {
-            document.getElementById('t-benh').className = 'tab-item';
-            document.getElementById('t-huyet').className = 'tab-item active';
+            document.getElementById('t-benh').setAttribute('class', 'tab-item');
+            document.getElementById('t-huyet').setAttribute('class', 'tab-item active');
             document.getElementById('tab-benh').style.display = 'none';
             document.getElementById('tab-huyet').style.display = 'block';
         }
     }
 
-    function hienThiPhacDoBenh() {
+    // HÀM HIỂN THỊ PHÁC ĐỒ ĐIỀU TRỊ KHÔNG LỖI
+    function hienThiPhacDo() {
         const chonBenh = document.getElementById('select-benh').value;
         const vungKetQua = document.getElementById('result-benh');
         
-        if (!chonBenh) {
+        if (chonBenh === "") {
             vungKetQua.style.display = 'none';
             return;
         }
         
-        const benhTimThay = khoDataBenh.find(x => x.TenBenh === chonBenh);
-        if (benhTimThay) {
-            vungKetQua.style.display = 'block';
-            document.getElementById('b-trieuchung').innerText = benhTimThay.TrieuChung;
+        // Tìm kiếm dữ liệu khớp tên cột
+        for (let i = 0; i < khoDataBenh.length; i++) {
+            if (khoDataBenh[i].TenBenh === chonBenh) {
+                vungKetQua.style.display = 'block';
+                document.getElementById('b-trieuchung').innerHTML = khoDataBenh[i].TrieuChung;
+                document.getElementById('b-bohuyet').innerHTML = khoDataBenh[i].BoHuyet;
+                document.getElementById('b-kythuat').innerHTML = khoDataBenh[i].KyThuat;
+                document.getElementById('b-loikhuyen').innerHTML = khoDataBenh[i].LoiKhuyen;
+                break;
+            }
+        }
+    }
+
+    // HÀM TÌM KIẾM HUYỆT ĐẠO KHÔNG LỖI
+    function timKiemHuyet() {
+        const tuKhoa = document.getElementById('search-huyet').value.toLowerCase();
+        const vungKetQuaHuyet = document.getElementById('result-huyet');
+        vungKetQuaHuyet.innerHTML = '';
+        
+        if (tuKhoa === "") return;
+        
+        let timThay = false;
+        for (let i = 0; i < khoDataHuyet.length; i++) {
+            let h = khoDataHuyet[i];
+            if (h.SoHuyet.toLowerCase().includes(tuKhoa) || 
+                h.TacDung.toLowerCase().includes(tuKhoa) || 
+                h.BenhLienQuan.toLowerCase().includes(tuKhoa)) {
+                
+                timThay = true;
+                vungKetQuaHuyet.innerHTML += `
+                    <div class="huyet-box">
+                        <h3 style="color:#00796b; margin:0 0 10px 0;">📌 ${h.SoHuyet.toUpperCase()}</h3>
+                        <p><strong>📍 Vị trí xác định:</strong> ${h.ViTri}</p>
