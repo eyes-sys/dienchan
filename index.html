@@ -2,26 +2,23 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Cẩm Nang Tra Cứu Diện Chẩn Toàn Diện</title>
+    <title>Cẩm Nang Tra Cứu Diện Chẩn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f4f4; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-        h1 { color: #004d40; text-align: center; margin-top: 0; font-size: 26px; }
-        .tabs { display: flex; background: #e0f2f1; border-radius: 8px; padding: 5px; margin-bottom: 20px; }
-        .tab-item { flex: 1; text-align: center; padding: 12px; font-weight: bold; color: #00796b; cursor: pointer; transition: 0.3s; border-radius: 6px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #00796b; text-align: center; font-size: 22px; margin-bottom: 20px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #00796b; }
+        .tab-item { flex: 1; text-align: center; padding: 12px; font-weight: bold; color: #00796b; cursor: pointer; background: #e0f2f1; }
         .tab-item.active { background: #00796b; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        select, input { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #b2dfdb; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        select:focus, input:focus { outline: none; border-color: #00796b; box-shadow: 0 0 5px rgba(0,121,107,0.3); }
-        .block { padding: 15px; margin: 15px 0; border-radius: 6px; background: #fafafa; border-left: 5px solid #ccc; }
+        select, input { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .block { padding: 15px; margin: 15px 0; border-radius: 4px; background: #fafafa; border-left: 5px solid #ccc; }
         .info { background: #e8f5e9; border-left-color: #2e7d32; }
         .success { background: #e3f2fd; border-left-color: #1565c0; }
         .warning { background: #fff3e0; border-left-color: #ef6c00; }
-        .huyet-box { background: white; border: 1px solid #e0e0e0; padding: 15px; margin: 15px 0; border-radius: 6px; border-left: 5px solid #00796b; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .huyet-title { color: #00796b; font-size: 18px; margin: 0 0 10px 0; display: flex; justify-content: space-between; }
-        .badge { background: #e0f2f1; color: #004d40; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: normal; }
+        .huyet-box { background: #fff; border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 4px; border-left: 5px solid #00796b; }
     </style>
 </head>
 <body>
@@ -35,44 +32,44 @@
 
     <!-- TAB 1: TRA CỨU BỆNH -->
     <div id="tab-benh" class="tab-content active">
-        <label style="font-weight: bold; color: #004d40;">Chọn hoặc gõ tìm tên bệnh / triệu chứng:</label>
+        <label style="font-weight: bold;">Chọn tên bệnh để xem phác đồ điều trị:</label>
         <select id="select-benh" onchange="showBenh()">
-            <option value="">-- Bấm vào đây để chọn bệnh --</option>
+            <option value="">-- Bấm vào đây để chọn bệnh lý --</option>
         </select>
         <div id="result-benh" style="display:none;">
-            <div class="block info"><strong>🔹 Triệu chứng lâm sàng:</strong> <p id="b-trieuchung" style="margin: 5px 0 0 0;"></p></div>
-            <div class="block success"><strong>🎯 Bộ huyệt Diện Chẩn (Phác đồ):</strong> <p id="b-bohuyet" style="margin: 5px 0 0 0; font-size: 20px; font-weight: bold; color: #1565c0;"></p></div>
-            <div class="block"><strong>🛠️ Kỹ thuật thực hiện:</strong> <p id="b-kythuat" style="margin: 5px 0 0 0; white-space: pre-line;"></p></div>
-            <div class="block warning"><strong>💡 Lời khuyên kiêng cữ / Lưu ý đặc biệt:</strong> <p id="b-loikhuyen" style="margin: 5px 0 0 0; white-space: pre-line;"></p></div>
+            <div class="block info"><strong>🔹 Triệu chứng lâm sàng:</strong> <p id="b-trieuchung"></p></div>
+            <div class="block success"><strong>🎯 Bộ huyệt Diện Chẩn (Phác đồ):</strong> <p id="b-bohuyet" style="font-size: 20px; font-weight: bold; color: #1565c0;"></p></div>
+            <div class="block"><strong>🛠️ Kỹ thuật thực hiện:</strong> <p id="b-kythuat" style="white-space: pre-line;"></p></div>
+            <div class="block warning"><strong>💡 Lời khuyên kiêng cữ / Lưu ý:</strong> <p id="b-loikhuyen" style="white-space: pre-line;"></p></div>
         </div>
     </div>
 
     <!-- TAB 2: TRA CỨU HUYỆT -->
     <div id="tab-huyet" class="tab-content">
-        <label style="font-weight: bold; color: #004d40;">Nhập số huyệt, tác dụng hoặc bệnh liên quan để tìm kiếm:</label>
-        <input type="text" id="search-huyet" oninput="searchHuyet()" placeholder="Ví dụ: 19, dạ dày, hạ sốt, mất ngủ...">
+        <label style="font-weight: bold;">Nhập số huyệt hoặc từ khóa tác dụng cần tìm kiếm:</label>
+        <input type="text" id="search-huyet" oninput="searchHuyet()" placeholder="Ví dụ: 19, dạ dày, hạ sốt...">
         <div id="result-huyet"></div>
     </div>
 </div>
 
 <script>
     // =========================================================================
-    // KHO DỮ LIỆU NỀN TỔNG HỢP TỪ TÀI LIỆU CỦA BẠN
+    // KHO DỮ LIỆU DIỆN CHẨN (Dán tiếp dữ liệu của bạn vào dưới các dòng mẫu)
     // =========================================================================
     const dataBenh = [
         {
             "TenBenh": "Đau dạ dày",
             "TrieuChung": "Đau rát vùng thượng vị, đầy hơi, ợ chua, ăn uống khó tiêu.",
             "BoHuyet": "19, 14, 50, 61, 39, 127, 0",
-            "KyThuat": "Dùng que dò chuyên dụng day ấn nhẹ nhàng vào mỗi vị trí huyệt khoảng 30 giây. Làm đều đặn ngày 2 lần vào buổi sáng và tối.",
-            "LoiKhuyen": "Tuyệt đối kiêng ăn các đồ chua, cay, nóng. Không uống nước đá lạnh, bia rượu khi đang điều trị."
+            "KyThuat": "Dùng que dò chuyên dụng day ấn nhẹ nhàng vào mỗi vị trí huyệt khoảng 30 giây. Làm đều đặn ngày 2 lần.",
+            "LoiKhuyen": "Tuyệt đối kiêng ăn các đồ chua, cay, nóng. Không uống nước đá lạnh."
         },
         {
             "TenBenh": "Mất ngủ",
-            "TrieuChung": "Khó vào giấc ngủ, ngủ chập chọn, hay tỉnh giấc giữa đêm, người mệt mỏi.",
+            "TrieuChung": "Khó vào giấc ngủ, ngủ chập chờn, hay tỉnh giấc giữa đêm.",
             "BoHuyet": "124, 34, 26, 103, 300, 0",
             "KyThuat": "Vạch nhẹ vùng trán bằng cây cào nhỏ trước khi ngủ 15 phút, sau đó day ấn nhẹ các vị trí huyệt.",
-            "LoiKhuyen": "Hạn chế tối đa việc sử dụng điện thoại, thiết bị điện tử trước khi đi ngủ. Không ăn quá no sau 8 giờ tối."
+            "LoiKhuyen": "Hạn chế tối đa việc sử dụng điện thoại trước khi đi ngủ. Không ăn quá no sau 8 giờ tối."
         },
         {
             "TenBenh": "Đau khớp gối",
@@ -81,7 +78,6 @@
             "KyThuat": "Lăn và xoa ấm vùng quanh khớp gối thực tế, sau đó thực hiện ấn bộ huyệt phản chiếu.",
             "LoiKhuyen": "Giữ ấm chân, tránh lội nước đêm, hạn chế mang vác vật nặng quá sức cơ thể."
         }
-        // Bạn dán tiếp các bệnh mới được NotebookLM trích xuất vào dưới dòng này...
     ];
 
     const dataHuyet = [
@@ -89,7 +85,7 @@
             "SoHuyet": "Huyệt 19",
             "ViTri": "Nằm ở điểm cao nhất của rãnh nhân trung, vị trí sát ngay vách mũi.",
             "TacDung": "Điều hòa tim mạch, trợ tim, nâng huyết áp, điều hòa hệ tiêu hóa, chống ngất xỉu.",
-            "CanhBao": "CHỐNG CHỈ ĐỊNH: Tuyệt đối không dùng cho người đang bị cao huyết áp và phụ nữ đang mang thai.",
+            "CanhBao": "Tuyệt đối không dùng cho người đang bị cao huyết áp và phụ nữ đang mang thai.",
             "BenhLienQuan": "Đau dạ dày, ngất xỉu, co giật, suy nhược thần kinh",
             "LuuY": "Khi tác động cần theo dõi kỹ sắc mặt và huyết áp của người bệnh."
         },
@@ -105,7 +101,7 @@
             "SoHuyet": "Huyệt 9",
             "ViTri": "Thẳng hàng dọc lòng đen con mắt xuống, ngang hàng với nếp nhăn bờ môi dưới.",
             "TacDung": "Làm mát cơ thể, giải độc, điều hòa nhịp tim, giảm đau nhức xương khớp gối.",
-            "CanhBao": "CHỐNG CHỈ ĐỊNH: Không dùng cho người có tiền sử huyết áp thấp.",
+            "CanhBao": "Không dùng cho người có tiền sử huyết áp thấp.",
             "BenhLienQuan": "Đau khớp gối, thoái hóa cột sống, sốt cao, tim đập nhanh",
             "LuuY": "Nếu trong lúc bấm người bệnh kêu chóng mặt thì dừng lại ngay và xoa ấm vùng hai tai."
         },
@@ -117,37 +113,33 @@
             "BenhLienQuan": "Tất cả các bệnh lý (Huyệt kết thúc giữ năng lượng)",
             "LuuY": "Luôn luôn thực hiện day ấn huyệt này ở bước cuối cùng của mọi phác đồ điều trị."
         }
-        // Bạn dán tiếp các huyệt mới được NotebookLM trích xuất vào dưới dòng này...
     ];
 
     // =========================================================================
-    // HỆ THỐNG ĐIỀU KHIỂN SỬA LỖI (BẢO ĐẢM KHÔNG MẤT DANH SÁCH KHI CHUYỂN TAB)
+    // HỆ THỐNG XỬ LÝ CHỨC NĂNG (THUẦN CƠ BẢN - CHẮC CHẮN KHÔNG LỖI)
     // =========================================================================
-    function init() {
+    function taiDanhSachBenh() {
         const select = document.getElementById('select-benh');
-        // Giữ nguyên cấu trúc ô chọn, chỉ nạp thêm bài viết mới
-        select.innerHTML = '<option value="">-- Bấm vào đây để chọn bệnh --</option>';
+        select.innerHTML = '<option value="">-- Bấm vào đây để chọn bệnh lý --</option>';
         dataBenh.forEach(b => {
             let opt = document.createElement('option');
             opt.value = b.TenBenh;
-            opt.innerHTML = b.TenBenh;
+            opt.text = b.TenBenh;
             select.appendChild(opt);
         });
     }
 
-    function switchTab(type) {
-        // Tách biệt việc ẩn hiện bằng hàm quản lý độc lập của CSS
-        document.getElementById('t-benh').classList.remove('active');
-        document.getElementById('t-huyet').classList.remove('active');
-        document.getElementById('tab-benh').classList.remove('active');
-        document.getElementById('tab-huyet').classList.remove('active');
-        
-        if(type === 'benh') {
-            document.getElementById('t-benh').classList.add('active');
-            document.getElementById('tab-benh').classList.add('active');
+    function switchTab(tabName) {
+        if(tabName === 'benh') {
+            document.getElementById('t-benh').className = 'tab-item active';
+            document.getElementById('t-huyet').className = 'tab-item';
+            document.getElementById('tab-benh').style.display = 'block';
+            document.getElementById('tab-huyet').style.display = 'none';
         } else {
-            document.getElementById('t-huyet').classList.add('active');
-            document.getElementById('tab-huyet').classList.add('active');
+            document.getElementById('t-benh').className = 'tab-item';
+            document.getElementById('t-huyet').className = 'tab-item active';
+            document.getElementById('tab-benh').style.display = 'none';
+            document.getElementById('tab-huyet').style.display = 'block';
         }
     }
 
@@ -167,4 +159,22 @@
     }
 
     function searchHuyet() {
-        // Sửa lỗi hàm .strip() chạy sai vị trí làm rơi rụng huyệt vị
+        const kw = document.getElementById('search-huyet').value.trim().toLowerCase();
+        const res = document.getElementById('result-huyet');
+        res.innerHTML = '';
+        if(!kw) return;
+        
+        let timThay = false;
+        dataHuyet.forEach(h => {
+            if(String(h.SoHuyet).toLowerCase().indexOf(kw) !== -1 || 
+               String(h.TacDung).toLowerCase().indexOf(kw) !== -1 || 
+               String(h.BenhLienQuan).toLowerCase().indexOf(kw) !== -1) {
+                
+                timThay = true;
+                res.innerHTML += `
+                    <div class="huyet-box">
+                        <h4 style="color:#00796b; margin:0 0 10px 0;">📌 ${String(h.SoHuyet).toUpperCase()}</h4>
+                        <p><strong>📍 Vị trí xác định:</strong> ${h.ViTri}</p>
+                        <p><strong>⚡ Tác dụng chủ trị:</strong> ${h.TacDung}</p>
+                        <p style="color:#ef6c00;"><strong>⚠️ Cảnh báo:</strong> ${h.CanhBao}</p>
+                        <p style="color:#1565c0;"><strong>🔗 Các bệnh liên quan:</strong> ${h.BenhLienQuan}</p>
