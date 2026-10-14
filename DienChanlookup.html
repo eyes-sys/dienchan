@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Tra Cứu Diện Chẩn Toàn Diện</title>
+    <style>
+        :root {
+            --primary-color: #8b0000;
+            --primary-hover: #a00000;
+            --secondary-color: #d9534f;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --warning-bg: #fff3cd;
+            --warning-text: #856404;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Tab Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            background: #e9ecef;
+            color: #495057;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: #dee2e6;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Controls / Search Controls */
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(139, 0, 0, 0.2);
+        }
+
+        /* Detail Card Layout */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .card-section {
+            margin-bottom: 12px;
+        }
+
+        .card-section strong {
+            color: #111;
+            display: inline-block;
+            min-width: 140px;
+        }
+
+        .badge-huyet {
+            display: inline-block;
+            background: #f8d7da;
+            color: #721c24;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 2px;
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Grid Layout for Huyệt Cards */
+        .huyet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .source-tag {
+            font-size: 12px;
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 10px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .nav-tabs { flex-direction: column; }
+            .tab-btn { border-radius: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>CẨM NANG TRA CỨU DIỆN CHẨN BÙI QUỐC CHÂU</h1>
+        <p>Hệ thống tra cứu Phác đồ Chữa bệnh & Huyệt đạo Y học Tự nhiên</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-benh')">📋 Tra cứu theo BỆNH</button>
+        <button class="tab-btn" onclick="switchTab('tab-huyet')">📌 Tra cứu chi tiết HUYỆT</button>
+    </div>
+
+    <!-- TAB 1: TRA CỨU THEO BỆNH -->
+    <div id="tab-benh" class="tab-content active">
+        <div class="search-box">
+            <select id="selectBenh" onchange="renderBenhDetail()">
+                <option value="">-- Chọn hoặc gõ tìm tên bệnh / triệu chứng --</option>
+            </select>
+        </div>
+        <div id="benhDetailContainer">
+            <div class="card" style="text-align: center; color: #666; padding: 40px;">
+                👈 Vui lòng chọn một bệnh từ danh sách ở trên để xem chi tiết phác đồ và kỹ thuật điều trị.
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: TRA CỨU CHI TIẾT HUYỆT -->
+    <div id="tab-huyet" class="tab-content">
+        <div class="search-box">
+            <input type="text" id="inputHuyet" placeholder="🔍 Nhập số huyệt (ví dụ: 19, 26, 127) hoặc tác dụng (tiêu viêm, dạ dày)..." onkeyup="filterHuyet()">
+        </div>
+        <div id="huyetGridContainer" class="huyet-grid">
+            <!-- Render danh sách huyệt bằng JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+// =========================================================================
+// 1. DỮ LIỆU BỆNH & PHÁC ĐỒ ĐIỀU TRỊ (dataBenh)
+// =========================================================================
+const dataBenh = [
+    {
+        id: "benh_01",
+        ten: "Nhức đầu / Đau nửa đầu (Migraine)",
+        nhom: "Hệ Thần kinh - Đầu Mặt",
+        trieuChung: "Đau đầu ê ẩm, đau thốn nửa bên đầu, hoa mắt, nặng trĩu vùng trán hoặc thái dương.",
+        phacDo: "103, 50, 87, 51, 61, 127, 19, 37 (Đau tổng quát). Đau nửa đầu: 240, 278, 320, 131, 235, 41, 100, 180, 61, 3, 54, 55, 56.",
+        kyThuat: "Day ấn các huyệt trên. Hơ ngải cứu mu bàn tay (nắm lại) hoặc đốt ngón tay giữa. Gạch nhẹ da đầu từ trán ra sau gáy.",
+        loiKhuyen: "Phân biệt rõ đau do Hàn (mình lạnh, tiểu trong) hay Nhiệt (mình nóng, tiểu vàng). Tránh gió lùa và nước lạnh.",
+        nguon: "Sổ tay Diện Chẩn; Thời Diện Chẩn (Thầy Nguyễn Đăng Kỳ)"
+    },
+    {
+        id: "benh_02",
+        ten: "Mất ngủ / Suy nhược thần kinh",
+        nhom: "Hệ Thần kinh - Đầu Mặt",
+        trieuChung: "Trằn trọc khó vào giấc ngủ, chập chờn, ngủ không sâu giấc, hay giật mình, mệt mỏi.",
+        phacDo: "124, 34, 103, 100, 300, 16, 14, 0; hoặc Bộ Ổn định thần kinh.",
+        kyThuat: "Day ấn êm nhẹ các huyệt. Cào da đầu từ trán ngược ra sau gáy 50 lượt. Úp tay gõ trống trời 30 lần.",
+        loiKhuyen: "Thực hiện trước khi đi ngủ 15-30 phút. Tránh dùng lực gạch quá mạnh gây kích thích tỉnh táo.",
+        nguon: "Diện Chẩn Điều khiển Liệu pháp; Thập Chỉ Đạo"
+    },
+    {
+        id: "benh_03",
+        ten: "Liệt dây thần kinh số VII (Liệt mặt)",
+        nhom: "Hệ Thần kinh - Đầu Mặt",
+        trieuChung: "Mắt nhắm không kín, méo miệng, lệch nhân trung, nếp nhăn trán bên liệt bị mất.",
+        phacDo: "127, 19, 39, 9, 10, 29, 267.",
+        kyThuat: "Day ấn và dán cao Salonpas. Hơ ngải cứu ấm vùng má bị liệt. Lăn cầu gai êm nhẹ trên vùng cơ má.",
+        loiKhuyen: "Tuyệt tuyệt kiêng gió lùa, kiêng rửa mặt bằng nước lạnh, không tắm đêm trong suốt quá trình trị liệu.",
+        nguon: "Giáo trình Phác đồ Hợp tuyển 2; Thời Diện Chẩn"
+    },
+    {
+        id: "benh_04",
+        ten: "Viêm xoang mũi / Nghẹt mũi / Sổ mũi",
+        nhom: "Hệ Hô hấp - Mũi",
+        trieuChung: "Đau tức vùng xoang trán/má, chảy nước mũi đục/trong, nghẹt thở, mất mùi hương.",
+        phacDo: "38, 17, 37, 50, 3, 61, 184, 287, 126. Nếu nhiễm lạnh dùng Bộ Thăng: 127, 50, 19, 39, 37, 1, 73, 189, 103, 300, 0.",
+        kyThuat: "Day ấn dán cao Salonpas. Hơ ấm ngải cứu dọc sống mũi và hai bờ xương hốc mắt.",
+        loiKhuyen: "Phân biệt xoang Hàn (hơ ấm, đánh bộ Thăng) và xoang Nhiệt (dùng bộ Giáng). Giữ ấm vùng cổ gáy.",
+        nguon: "1 - SO-TAY-DIEN-CHAN.pdf; GT_PhacDoHopTuyen_1.pdf"
+    },
+    {
+        id: "benh_05",
+        ten: "Ho lâu ngày / Viêm họng / Khan tiếng",
+        nhom: "Hệ Hô hấp - Cổ Họng",
+        trieuChung: "Ngứa cổ họng, ho từng cơn, đau rát họng, khạc đờm hoặc ho khô mất tiếng.",
+        phacDo: "61, 74, 64, 17, 38, 14, 275. Khan tiếng: 26, 312, 8, 14, 275, 3.",
+        kyThuat: "Day ấn huyệt, chà xát nóng hai cổ tay vào nhau. Vuốt dọc vùng cổ xuống hõm cổ 30 lần. Gõ nhẹ dái tai (14, 275).",
+        loiKhuyen: "Giữ ấm cổ gáy, tuyệt đối kiêng uống nước đá, đồ ăn quá lạnh hoặc cay rát họng.",
+        nguon: "Sổ tay Diện Chẩn; Bấm phản xạ bàn chân (Hoàng Duy Tân)"
+    },
+    {
+        id: "benh_06",
+        ten: "Thoái hóa Cột sống cổ / Cứng mỏi Cổ Gáy",
+        nhom: "Cơ Xương Khớp - Cột Sống",
+        trieuChung: "Đau co cứng cơ gáy, khó xoay gập cổ, đau lan xuống bả vai và tê hai tay.",
+        phacDo: "16, 61, 287; hoặc 65, 8, 290, 127, 87; hoặc 26, 8, 1 (Phác đồ thoái hóa cổ).",
+        kyThuat: "Nắm bàn tay lại (giấu ngón cái vào trong), vuốt từ mắt cá cổ tay lên cẳng tay để tìm sinh huyệt. Quay cổ tay 100-200 vòng.",
+        loiKhuyen: "Không bẻ co xoay cổ đột ngột. Giữ ấm vùng gáy khi ngủ phòng điều hòa.",
+        nguon: "Đồng ứng Liệu pháp; Diện Chẩn Điều khiển Liệu pháp"
+    },
+    {
+        id: "benh_07",
+        ten: "Đau Khớp Gối (Sưng / Viêm / Khô dịch / Có dịch)",
+        nhom: "Cơ Xương Khớp - Chi Dưới",
+        trieuChung: "Đau khớp gối khi đi lại, co gập gối khó khăn, lạo xạo khớp gối hoặc sưng tụ dịch.",
+        phacDo: "17, 38, 197, 300, 45, 0 (Sưng đau). Khô dịch: 38, 26, 61, 3. Có dịch: Bấm Âm lăng tuyền, Túc tam lý, Phong long.",
+        kyThuat: "Day xoa vùng cùi chỏ tay cùng bên (Đồng ứng Cùi chỏ = Đầu gối). Hơ ngải cứu quanh gối. Nếu tụ dịch: chườm đá gói khăn 4 phút.",
+        loiKhuyen: "Không nắn bóp trực tiếp lên gối đang sưng viêm cấp. Hạn chế leo cầu thang nhiều.",
+        nguon: "Giáo trình Phác đồ Hợp tuyển 3; Sổ tay bài thuốc đơn giản hiệu quả Tập 4"
+    },
+    {
+        id: "benh_08",
+        ten: "Đau Thần kinh tọa / Thoát vị đĩa đệm",
+        nhom: "Cơ Xương Khớp - Cột Sống",
+        trieuChung: "Đau nhức từ thắt lưng lan xuống mông, đùi, bắp chân và mép ngoài bàn chân.",
+        phacDo: "5, 74, 17, 51, 219, 19, 277, 61, 342.",
+        kyThuat: "Gạch dọc sống mũi. Day ấn các huyệt trên đường Pháp lệnh. Day hạch thần kinh kẽ ngón chân 4-5.",
+        loiKhuyen: "Không cúi gập lưng đột ngột khi bê vật nặng. Nằm giường phẳng phẳng nệm cứng.",
+        nguon: "Thời Diện Chẩn (Nguyễn Đăng Kỳ); Thập Chỉ Đạo"
+    },
+    {
+        id: "benh_09",
+        ten: "Đau Dạ dày (Bao tử) / Nấc cụt / Ợ chua",
+        nhom: "Hệ Tiêu hóa",
+        trieuChung: "Đau tức vùng thượng vị, ợ hơi, ợ chua, nôn mửa, đầy trướng bụng sau khi ăn.",
+        phacDo: "124, 34, 61, 39, 120, 121, 19, 64, 630 (Bên trái mặt). Nấc cụt: 19, 26, 312, 61.",
+        kyThuat: "Day ấn và dán cao Salonpas các huyệt bên cánh mũi trái. Day vùng phản xạ Hang vị dạ dày ở lòng bàn chân trái.",
+        loiKhuyen: "Ăn uống đúng giờ, kiêng đồ cay nóng, chất chua, cà phê, rượu bia và giảm căng thẳng.",
+        nguon: "Diện Chẩn Điều khiển Liệu pháp; GT_PhacDoHopTuyen_1.pdf"
+    },
+    {
+        id: "benh_10",
+        ten: "Sỏi Mật (Túi mật / Đường mật)",
+        nhom: "Hệ Tiêu hóa - Gan Mật",
+        trieuChung: "Cơn đau quặn hông sườn phải, đầy bụng khó tiêu đồ mỡ, đắng miệng, vàng da.",
+        phacDo: "26, 188, 196, 61, 74, 64, 38, 156, 14, 143, 537, 41, 233, 50 (Bộ Tiêu viêm giải độc & Tiêu mỡ).",
+        kyThuat: "Day ấn các huyệt 41, 50, 233. Hơ ngải cứu điểm hút nóng vùng má phải và huyệt Nhật Nguyệt (khe sườn 7 đường trung đòn).",
+        loiKhuyen: "Uống đủ 1.5 - 2 lít nước ấm/ngày. Kiêng mỡ động vật, đồ chiên xào nhiều dầu mỡ.",
+        nguon: "GT_PhacDoHopTuyen_3.pdf; Sổ tay bài thuốc đơn giản hiệu quả Tập 6"
+    },
+    {
+        id: "benh_11",
+        ten: "U nang Buồng trứng / U nang Vú / Hạch Cổ",
+        nhom: "Nội tiết - Phụ khoa - Khối U",
+        trieuChung: "Khối u nang bọng nước ở buồng trứng/vú, sưng hạch nếp cổ, tức ngực, rối loạn kinh nguyệt.",
+        phacDo: "Bộ Tiêu U Bướu: 41, 143, 127, 19, 37, 38. Buồng trứng: 124, 26, 37, 50, 63, 7. Vú: thêm H.73. Hạch cổ: 14, 275, 106.",
+        kyThuat: "Day ấn 3 đợt cách quãng, dán cao Salonpas qua đêm. Hơ ngải cứu điểm hút nóng vùng u. Day bấm khu phản xạ gót chân và mắt cá.",
+        loiKhuyen: "Kiêng đồ ăn quá lạnh, kiêng chất kích thích. Giữ tâm lý thanh thản tránh ức chế Can khí.",
+        nguon: "Thời Diện Chẩn; Sổ tay bài thuốc đơn giản hiệu quả Tập 5"
+    },
+    {
+        id: "benh_12",
+        ten: "Tăng Huyết Áp Cấp Tính",
+        nhom: "Hệ Tim Mạch - Tim",
+        trieuChung: "Nhức đầu vùng đỉnh/sau gáy, hoa mắt, đỏ mặt, nóng bừng, huyết áp đo tăng cao.",
+        phacDo: "15, 14, 16, 26, 8, 124, 34.",
+        kyThuat: "Vuốt xuôi từ trên xuống rãnh sau tai (từ Huyệt 16 xuống Huyệt 14). Vuốt trán từ giữa ra hai bên thái dương.",
+        loiKhuyen: "Thao tác nhẹ nhàng xuôi chiều từ trên xuống dưới (để hạ áp). Tuyệt đối không vuốt ngược lên.",
+        nguon: "Diện Chẩn Học; Sổ tay bài thuốc đơn giản hiệu quả Tập 5"
+    }
+];
+
+// =========================================================================
+// 2. DỮ LIỆU CHI TIẾT HUYỆT ĐẠO (dataHuyet)
+// =========================================================================
+const dataHuyet = [
+    {
+        so: "0",
+        ten: "Huyệt 0 (Khóa khí / Tăng lực)",
+        viTri: "Nằm ở chỗ lõm ngay rãnh mép tai (khuyết trước vành tai, ngang nếp bình tai).",
+        tacDung: "Cầm mồ hôi, ổn định huyết áp, tăng lực, cắt cơn đau cấp, khóa khí huyết.",
+        canhBao: "Không bấm quá mạnh gây thốn nhói tai.",
+        benhLienQuan: "Cảm sốt, suy nhược, huyết áp cao/thấp, nhức đầu, đau tai.",
+        luuY: "Là huyệt kết thúc trong hầu hết các bộ phác đồ Diện Chẩn."
+    },
+    {
+        so: "1",
+        ten: "Huyệt 1 (Cột sống / Thần kinh)",
+        viTri: "Nằm trên sống mũi, tại điểm nối 1/3 trên và 2/3 dưới của đoạn từ Sơn căn (H.26) đến đầu mũi.",
+        tacDung: "Đặc trị đau cột sống lưng, tăng huyết áp, thăng khí, định thần, điều hòa nhịp tim.",
+        canhBao: "Người cao huyết áp cần cẩn trọng khi dùng lực ấn mạnh.",
+        benhLienQuan: "Đau thắt lưng, thoát vị đĩa đệm, thoái hóa cột sống, trĩ, sa tử cung.",
+        luuY: "Phản chiếu đốt sống thắt lưng L1-L5."
+    },
+    {
+        so: "3",
+        ten: "Huyệt 3 (Phổi / Tim)",
+        viTri: "Nằm ở hai bên bờ hốc mắt dưới, ngang huyệt 61 kéo ra trên đường đứng giữa con ngươi.",
+        tacDung: "Thanh nhiệt, hạ sốt, tiêu viêm phế quản, làm mát phổi, dịu cơn ho.",
+        canhBao: "Người tạng quá Hàn nên hạn chế bấm kéo dài.",
+        benhLienQuan: "Viêm phế quản, ho, sốt cao, đau mắt, viêm mũi dị ứng.",
+        luuY: "Nằm trong Bộ Giáng và Bộ Tiêu Viêm."
+    },
+    {
+        so: "7",
+        ten: "Huyệt 7 (Buồng trứng / Tuyến Tụy)",
+        viTri: "Nằm ở hai bên nhân trung, giao điểm đường ngang chia đôi nhân trung và đường đứng qua bờ trong lỗ mũi.",
+        tacDung: "Điều hòa nội tiết tố nữ, đặc trị u nang buồng trứng, kích thích tuyến tụy tiết insulin.",
+        canhBao: "Tránh châm sâu khi đang có thai.",
+        benhLienQuan: "U nang buồng trứng, đau bụng kinh, trễ kinh, tiểu đường, hiếm muộn.",
+        luuY: "Huyệt kép hai bên nhân trung."
+    },
+    {
+        so: "14",
+        ten: "Huyệt 14 (Cổ họng / Tai)",
+        viTri: "Nằm ở chỗ lõm ngay sát bờ dưới dái tai (tiếp giáp dái tai và góc hàm).",
+        tacDung: "Tiêu viêm vùng cổ họng, giải độc hạch cổ, hạ huyết áp, an thần, trị quai bị.",
+        canhBao: "Thao tác nhẹ nhàng, tránh làm đau tuyến nước bọt mang tai.",
+        benhLienQuan: "Viêm họng, khan tiếng, sưng hạch cổ, viêm quai bị, cao huyết áp.",
+        luuY: "Phản chiếu hạch bạch huyết vùng cổ."
+    },
+    {
+        so: "16",
+        ten: "Huyệt 16 (Cầm máu / Tai)",
+        viTri: "Nằm ở mép trên cùng nơi vành tai giáp với da mặt.",
+        tacDung: "Cầm máu tức thì, giảm tiết dịch bọng nước, hạ huyết áp, co mạch máu.",
+        canhBao: "Không dùng cho người huyết áp quá thấp.",
+        benhLienQuan: "Xuất huyết dưới da, chảy máu cam, trĩ chảy máu, u nang bọng nước.",
+        luuY: "Là huyệt đầu bảng trong phác đồ Cầm máu."
+    },
+    {
+        so: "19",
+        ten: "Huyệt 19 (Cấp cứu / Nhân trung)",
+        viTri: "Nằm ở điểm cao nhất của rãnh Nhân trung, sát bờ dưới chân cánh mũi.",
+        tacDung: "Cấp cứu ngất xỉu, thăng huyết áp, chống co giật, kích thích co bóp dạ dày/tử cung.",
+        canhBao: "⚠️ CHỐNG CHỈ ĐỊNH: Tuyệt đối không dùng cho phụ nữ đang mang thai hoặc người cao huyết áp cấp.",
+        benhLienQuan: "Ngất xỉu, sa tử cung, nấc cụt, đẻ khó, sa dạ dày, suy nhược.",
+        luuY: "Huyệt đại cấp cứu của Diện Chẩn."
+    },
+    {
+        so: "26",
+        ten: "Huyệt 26 (Sơn căn / An thần)",
+        viTri: "Nằm ở chính giữa đường nối hai đầu lông mày (vùng Sơn căn).",
+        tacDung: "An thần, hạ huyết áp, hạ sốt, tiêu viêm, giảm đau toàn thân, tương ứng với tuyến yên.",
+        canhBao: "Thao tác vuốt xuống giúp hạ áp; ấn giữ giúp an thần.",
+        benhLienQuan: "Nhức đầu, mất ngủ, cao huyết áp, sốt cao, hen suyễn, đau lưng.",
+        luuY: "Một trong 8 bộ Đại Huyệt quan trọng nhất."
+    },
+    {
+        so: "37",
+        ten: "Huyệt 37 (Lá lách / Tỳ - Bên Trái)",
+        viTri: "Nằm ở bên trái mặt, giao điểm đường ngang bờ dưới cánh mũi trái và đường đứng giữa con ngươi trái.",
+        tacDung: "Bổ máu, tiêu u bướu, tăng cường tính miễn nhiễm, cầm tiểu, làm ấm cơ thể.",
+        canhBao: "Chỉ nằm ở nửa mặt bên TRÁI.",
+        benhLienQuan: "U nang, suy nhược cơ thể, thiếu máu, tiểu đêm, lạnh bụng.",
+        luuY: "Cốt lõi trong Bộ Tiêu U Bướu và Bổ Âm Huyết."
+    },
+    {
+        so: "38",
+        ten: "Huyệt 38 (Kháng sinh nội sinh / Pháp lệnh)",
+        viTri: "Nằm ở hai bên đường Pháp lệnh (nếp nhăn mũi-má), ngang xô gờ trên nhân trung.",
+        tacDung: "Kích thích sản sinh kháng sinh nội sinh, tiêu viêm, diệt khuẩn, nhuận trường.",
+        canhBao: "Không ấn quá sâu gây đau mô cơ má.",
+        benhLienQuan: "Viêm nhiễm, mụn nhọt, táo bón, viêm xoang, u nang, đau khớp gối.",
+        luuY: "Có mặt trong hầu hết các bộ Tiêu Viêm Giải Độc."
+    },
+    {
+        so: "39",
+        ten: "Huyệt 39 (Dạ dày / Bao tử - Bên Trái)",
+        viTri: "Nằm ở bên trái mặt, tại nếp nhăn mũi má (đường Pháp lệnh) ngang chân cánh mũi.",
+        tacDung: "Đặc trị các bệnh dạ dày, tiêu hơi, trợ tiêu hóa, tiêu đờm.",
+        canhBao: "Chỉ nằm ở nửa mặt bên TRÁI.",
+        benhLienQuan: "Đau dạ dày, viêm hang vị, ợ chua, trướng bụng, khó tiêu.",
+        luuY: "Phản chiếu dạ dày trên mặt."
+    },
+    {
+        so: "41",
+        ten: "Huyệt 41 (Túi mật / Đởm - Bên Phải)",
+        viTri: "Nằm ở bên phải mặt, giao điểm đường ngang bờ dưới cánh mũi phải và đường đứng bờ ngoài tròng đen mắt phải.",
+        tacDung: "Đầu bộ Tiêu U Bướu, thông mật, bào mòn sỏi mật, tiêu mỡ, giảm đau cấp.",
+        canhBao: "Chỉ nằm ở nửa mặt bên PHẢI.",
+        benhLienQuan: "Sỏi mật, u nang, mỡ máu, đau hông sườn, dị ứng, mụn nhọt.",
+        luuY: "Chủ huyệt trong xử lý sỏi và u nang."
+    },
+    {
+        so: "50",
+        ten: "Huyệt 50 (Gan / Can - Bên Phải)",
+        viTri: "Nằm ở bên phải mặt, giao điểm đường ngang bờ dưới cánh mũi phải và đường đứng giữa con ngươi mắt phải.",
+        tacDung: "Bổ gan, giải độc gan, cầm máu, thăng khí, tiêu mỡ, điều hòa gân cơ.",
+        canhBao: "⚠️ CHỐNG CHỈ ĐỊNH: Người có bệnh cao huyết áp tránh dùng hoặc ấn mạnh huyệt này.",
+        benhLienQuan: "Sỏi mật, viêm gan, mụn nhọt, men gan cao, quai bị, suy nhược.",
+        luuY: "Chủ huyệt tạng Gan bên phải."
+    },
+    {
+        so: "61",
+        ten: "Huyệt 61 (Tim / Mũi / Cầm máu)",
+        viTri: "Nằm ở chỗ lõm ngay đầu trên của đường Pháp lệnh (sát bờ ngoài cánh mũi).",
+        tacDung: "Giảm đau cấp tính, cầm máu, tiêu viêm, cắt cơn co thắt, giãn cơ.",
+        canhBao: "Cấm ấn quá sâu và mạnh ở huyệt 61 bên trái vì có thể gây mệt tim.",
+        benhLienQuan: "Đau dạ dày, ho suyễn, nhức răng, chảy máu cam, đau khớp vai.",
+        luuY: "Nằm trong Tam giác Phổi/Khí quản."
+    },
+    {
+        so: "73",
+        ten: "Huyệt 73 (Phản chiếu Bầu Vú)",
+        viTri: "Nằm ở chính giữa bờ dưới xương hốc mắt (đường đứng giữa con ngươi kéo thẳng xuống).",
+        tacDung: "Đặc trị các bệnh bầu vú, bổ phổi, thăng khí, làm sáng mắt.",
+        canhBao: "Không dùng lực gõ quá mạnh lên xương hốc mắt.",
+        benhLienQuan: "U nang vú, viêm tắc tuyến sữa, đau tức ngực, mờ mắt, đau vai.",
+        luuY: "Phản chiếu trực tiếp bầu vú và buồng trứng."
+    },
+    {
+        so: "127",
+        ten: "Huyệt 127 (Bụng dưới / Mạch Nhâm)",
+        viTri: "Nằm ở chính giữa chỗ lõm đường cong phân cách môi dưới và ụ cằm.",
+        tacDung: "Làm ấm bụng dưới, thăng khí, chống co thắt ruột/tử cung, tiêu u nang.",
+        canhBao: "Thao tác êm nhẹ, hơ ngải cứu rất hiệu quả.",
+        benhLienQuan: "Đau bụng kinh, u nang buồng trứng, trĩ, sa tử cung, lạnh bụng, tiêu chảy.",
+        luuY: "Phản chiếu bụng dưới và tử cung."
+    },
+    {
+        so: "143",
+        ten: "Huyệt 143 (Đầu mũi / Trĩ / Tiêu u)",
+        viTri: "Nằm ở điểm thấp nhất chính giữa đầu mũi (chỗ lõm giữa hai lỗ mũi).",
+        tacDung: "Tiêu u bướu, bào mòn sỏi, hạ nhiệt, nhuận trường, trị trĩ.",
+        canhBao: "Tránh châm đâm sâu vào sụn đầu mũi.",
+        benhLienQuan: "Sỏi mật, trĩ nội/ngoại, táo bón, sốt cao, u nang.",
+        luuY: "Nằm trong Bộ Tiêu U Bướu và Bộ Giáng."
+    }
+];
+
+// =========================================================================
+// 3. LOGIC XỬ LÝ GIAO DIỆN (JavaScript Functions)
+// =========================================================================
+
+// Khởi tạo dữ liệu khi trang tải xong
+window.onload = function() {
+    initBenhDropdown();
+    renderHuyetGrid(dataHuyet);
+};
+
+// Chuyển đổi qua lại giữa các Tab
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    if(tabId === 'tab-benh') {
+        document.querySelectorAll('.tab-btn').classList.add('active');
+        document.getElementById('tab-benh').classList.add('active');
+    } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-huyet').classList.add('active');
+    }
+}
+
+// Nạp danh sách bệnh vào Select dropdown
+function initBenhDropdown() {
+    const select = document.getElementById('selectBenh');
+    dataBenh.forEach(benh => {
+        const option = document.createElement('option');
+        option.value = benh.id;
+        option.textContent = `[${benh.nhom}] ${benh.ten}`;
+        select.appendChild(option);
+    });
+}
+
+// Hiển thị chi tiết bệnh được chọn
+function renderBenhDetail() {
+    const selectValue = document.getElementById('selectBenh').value;
+    const container = document.getElementById('benhDetailContainer');
+
+    if (!selectValue) {
+        container.innerHTML = `<div class="card" style="text-align: center; color: #666; padding: 40px;">👈 Vui lòng chọn một bệnh từ danh sách ở trên để xem chi tiết phác đồ và kỹ thuật điều trị.</div>`;
+        return;
+    }
+
+    const benh = dataBenh.find(b => b.id === selectValue);
+    if (benh) {
+        container.innerHTML = `
+            <div class="card">
+                <h2>📋 ${benh.ten}</h2>
+                <div class="card-section"><strong>Nhóm bệnh:</strong> ${benh.nhom}</div>
+                <div class="card-section"><strong>Triệu chứng nhận biết:</strong> ${benh.trieuChung}</div>
+                <div class="card-section">
+                    <strong>Phác đồ / Bộ huyệt:</strong> 
+                    <span style="color: var(--primary-color); font-weight: bold;">${benh.phacDo}</span>
+                </div>
+                <div class="card-section"><strong>Kỹ thuật & Thủ pháp:</strong> ${benh.kyThuat}</div>
+                <div class="card-section"><strong>Lời khuyên & Kiêng cữ:</strong> ${benh.loiKhuyen}</div>
+                <span class="source-tag">📖 Nguồn tài liệu: ${benh.nguon}</span>
+            </div>
+        `;
+    }
+}
+
+// Hiển thị danh sách thẻ Huyệt
+function renderHuyetGrid(list) {
+    const container = document.getElementById('huyetGridContainer');
+    if (list.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #777;">Không tìm thấy huyệt đạo phù hợp với từ khóa tìm kiếm.</div>`;
+        return;
+    }
+
+    container.innerHTML = list.map(h => `
+        <div class="card" style="margin-bottom: 0;">
+            <h2>📌 ${h.ten}</h2>
+            <div class="card-section"><strong>Vị trí định vị:</strong> ${h.viTri}</div>
+            <div class="card-section"><strong>Tác dụng trị liệu:</strong> ${h.tacDung}</div>
+            <div class="card-section"><strong>Bệnh liên quan:</strong> ${h.benhLienQuan}</div>
+            ${h.canhBao ? `<div class="warning-box"><strong>Cảnh báo / Chống chỉ định:</strong> \${h.canhBao}</div>` : ''}
+            <span class="source-tag">💡 Lưu ý: ${h.luuY}</span>
+        </div>
+    `).join('');
+}
+
+// Lọc tìm kiếm huyệt theo từ khóa
+function filterHuyet() {
+    const keyword = document.getElementById('inputHuyet').value.toLowerCase().trim();
+    const filtered = dataHuyet.filter(h => 
+        h.so.toLowerCase().includes(keyword) ||
+        h.ten.toLowerCase().includes(keyword) ||
+        h.viTri.toLowerCase().includes(keyword) ||
+        h.tacDung.toLowerCase().includes(keyword) ||
+        h.benhLienQuan.toLowerCase().includes(keyword)
+    );
+    renderHuyetGrid(filtered);
+}
+</script>
+
+</body>
+</html>
